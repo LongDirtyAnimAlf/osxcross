@@ -1,0 +1,47 @@
+--- C:/cygwin/opt/osxcross/tarballs/cctools-886-ld64-264.3.102_db1f8d9/cctools-886-ld64-264.3.102_db1f8d9/cctools/ld64/src/ld/Options.cpp	Sat Jun 25 11:44:09 2016
++++ C:/cygwin/opt/osxcross/build/cctools-886-ld64-264.3.102_db1f8d9/cctools/ld64/src/ld/Options.cpp	Tue Nov 22 08:25:46 2016
+@@ -867,9 +867,20 @@
+ 	return false;
+ }
+ 
++static std::string get_extension(const std::string &path)
++{
++	auto result = path;
++	auto lastSlashIdx = result.find_last_of('/');
++	auto lastDotIdx = result.find_last_of('.');
++	if (lastDotIdx != std::string::npos && lastDotIdx > lastSlashIdx)
++		result.erase(0,lastDotIdx);
++	return result;
++}
++
+ Options::FileInfo Options::findFile(const std::string &path) const
+ {
+ 	FileInfo result;
++	bool found;
+ 
+ 	// if absolute path and not a .o file, then use SDK prefix
+ 	if ( (path[0] == '/') && (strcmp(&path[path.size()-2], ".o") != 0) ) {
+@@ -895,6 +906,23 @@
+ 
+ 		if ( findFile(newPath, {".tbd"}, result) )
+ 			return result;
++	}
++
++	// get file extension
++	auto Extension = get_extension(path);
++	// remove line endings from extension
++	while ( Extension.find ("\n") != std::string::npos )
++	{
++	        Extension.erase ( Extension.find ("\n"), 1 );
++	}
++	while ( Extension.find ("\r") != std::string::npos )
++	{
++	        Extension.erase ( Extension.find ("\r"), 1 );
++	}
++	// find file with its own extension
++	found = findFile(path, {Extension}, result);
++	if ( found ) {
++		return result;
+ 	}
+ 
+ 	// not found
