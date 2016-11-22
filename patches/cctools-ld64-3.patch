@@ -1,5 +1,5 @@
---- C:/cygwin/opt/osxcross/tarballs/cctools-886-ld64-264.3.102_db1f8d9/cctools-886-ld64-264.3.102_db1f8d9/cctools/ld64/src/ld/Options.cpp	Sat Jun 25 11:44:09 2016
-+++ C:/cygwin/opt/osxcross/build/cctools-886-ld64-264.3.102_db1f8d9/cctools/ld64/src/ld/Options.cpp	Tue Nov 22 08:25:46 2016
+--- ld64/src/ld/Options.cpp	Sat Jun 25 11:44:09 2016
++++ ld64/src/ld/Options.cpp	Tue Nov 22 08:25:46 2016
 @@ -867,9 +867,20 @@
  	return false;
  }
