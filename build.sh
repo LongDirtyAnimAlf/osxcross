@@ -150,6 +150,7 @@ pushd .. &>/dev/null
 popd &>/dev/null
 patch -p0 < $PATCH_DIR/cctools-ld64-1.patch
 patch -p0 < $PATCH_DIR/cctools-ld64-2.patch
+patch -p0 < $PATCH_DIR/cctools-ld64-3.patch
 patch -p1 < $PATCH_DIR/cctools-ld64-misc-fixes-1.patch
 pushd .. &>/dev/null
 patch -p0 < $PATCH_DIR/cctools-ld64-cygwin-buildfix.patch
