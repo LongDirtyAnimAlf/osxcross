@@ -58,6 +58,10 @@
 #include <libutil.h>
 #endif
 
+#if defined(WINDOWS) || defined(_WIN32) || defined(__CYGWIN__)
+#include <windows.h>
+#endif
+
 #include "tools.h"
 
 namespace tools {
@@ -134,6 +138,23 @@ char *getExecutablePath(char *buf, size_t len) {
   else
     l = 0;
   delete[] argv;
+
+#elif defined(WINDOWS) || defined(_WIN32) || defined(__CYGWIN__)
+  char full_path[MAX_PATH];
+  unsigned int l = 0;
+  l = GetModuleFileName(NULL, full_path, MAX_PATH);
+  p = strchr(full_path, '\\');
+  while (p) {
+    *p = PATHDIV;
+    p  = strchr(full_path, '\\');
+  }
+
+  p = strchr(full_path, ':');
+  if (p)
+    *p = PATHDIV;
+
+  snprintf(buf, len, "%c%s%c%s", PATHDIV, "cygdrive", PATHDIV, full_path);
+
 #else
   ssize_t l = readlink("/proc/self/exe", buf, len - 1);
   assert(l > 0 && "/proc not mounted?");

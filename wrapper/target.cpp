@@ -147,6 +147,29 @@ bool Target::getSDKPath(std::string &path) const {
       path += "u";
 
     path += ".sdk";
+
+    if (!dirExists(path)) {
+
+      path = execpath;
+      // fpcupdeluxe default SDK directory
+      //path += "/../../lib/x86-darwin/MacOSX";
+      path += PATHDIV;
+      path += "..";
+      path += PATHDIV;
+      path += "..";
+      path += PATHDIV;
+      path += "lib";
+      path += PATHDIV;
+      path += "x86-darwin";
+      path += PATHDIV;
+      path += "MacOSX";
+      path += SDKVer.shortStr();
+
+      if (SDKVer <= OSVersion(10, 4))
+        path += "u";
+
+      path += ".sdk";
+    }
   }
 
   if (!dirExists(path)) {
@@ -289,9 +312,11 @@ void Target::setCompilerPath() {
     compilerexecname += "-";
     compilerexecname += compilername;
   } else {
-    if (!realPath(compilername.c_str(), compilerpath, ignoreCCACHE))
-      compilerpath = compilername;
-
+    if (!realPath(compilername.c_str(), compilerpath, ignoreCCACHE)) {
+      compilerpath = execpath;
+      compilerpath += PATHDIV;
+      compilerpath += compilername;
+    }
     compilerexecname += compilername;
   }
 }
@@ -403,6 +428,9 @@ do {                                                                           \
 
   TRYDIR2("/../include/clang");
   TRYDIR2("/usr/include/clang");
+
+  // for fpcupdeluxe
+  TRYDIR(execpath, "/include/clang");
 
   return false;
 #undef TRYDIR
