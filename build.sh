@@ -80,7 +80,7 @@ if [ -z "$OSX_VERSION_MIN" ]; then
   fi
 fi
 
-OSXCROSS_VERSION=0.14
+OSXCROSS_VERSION=0.15
 
 X86_64H_SUPPORTED=0
 
@@ -136,9 +136,9 @@ function remove_locks()
 source $BASE_DIR/tools/trap_exit.sh
 
 # CCTOOLS
-CCTOOLS_PATCH_REV=2
-LINKER_VERSION=264.3.102
-CCTOOLS="cctools-886-ld64-$LINKER_VERSION"
+CCTOOLS_PATCH_REV=0
+LINKER_VERSION=274.2
+CCTOOLS="cctools-895-ld64-$LINKER_VERSION"
 CCTOOLS_TARBALL=$(ls $TARBALL_DIR/$CCTOOLS*.tar.* | head -n1)
 CCTOOLS_REVHASH=$(echo $(basename "$CCTOOLS_TARBALL") | tr '_' '\n' | \
                   tr '.' '\n' | tail -n3 | head -n1)
@@ -157,15 +157,9 @@ popd &>/dev/null
 patch -p0 < $PATCH_DIR/cctools-ld64-1.patch
 patch -p0 < $PATCH_DIR/cctools-ld64-2.patch
 patch -p0 < $PATCH_DIR/cctools-ld64-3.patch
-patch -p1 < $PATCH_DIR/cctools-ld64-misc-fixes-1.patch
-pushd .. &>/dev/null
-patch -p0 < $PATCH_DIR/cctools-ld64-cygwin-buildfix.patch
-patch -p0 < $PATCH_DIR/cctools-ld64-misc-fixes-2.patch
-rm -r cctools/ld
-popd &>/dev/null
 echo ""
 CONFFLAGS="--prefix=$TARGET_DIR --target=x86_64-apple-$TARGET "
-CONFFLAGS+="--disable-clang-as "
+[ -z "$USE_CLANG_AS" ] && CONFFLAGS+="--disable-clang-as "
 [ -n "$DISABLE_LTO_SUPPORT" ] && CONFFLAGS+="--disable-lto-support "
 ./configure $CONFFLAGS
 $MAKE -j$JOBS
@@ -213,8 +207,14 @@ if [ $NEED_XAR -ne 0 ]; then
 extract $TARBALL_DIR/xar*.tar.gz 2
 
 pushd xar* &>/dev/null
-[ $PLATFORM == "NetBSD" ] && patch -p0 -l < $PATCH_DIR/xar-netbsd.patch
-CFLAGS+=" -w" ./configure --prefix=$TARGET_DIR
+if [ $PLATFORM == "NetBSD" ]; then
+  patch -p0 -l < $PATCH_DIR/xar-netbsd.patch
+fi
+patch -p0 < $PATCH_DIR/xar-ext2.patch
+# https://github.com/tpoechtrager/osxcross/issues/109
+ac_cv_lib_crypto_OpenSSL_add_all_ciphers=yes \
+CFLAGS+=" -w" \
+  ./configure --prefix=$TARGET_DIR
 $MAKE -j$JOBS
 $MAKE install -j$JOBS
 popd &>/dev/null
