@@ -312,12 +312,17 @@ void Target::setCompilerPath() {
     compilerexecname += "-";
     compilerexecname += compilername;
   } else {
-    if (!realPath(compilername.c_str(), compilerpath, ignoreCCACHE)) {
-      compilerpath = execpath;
-      compilerpath += PATHDIV;
+    if (!compilerpath.empty()) {
+      compilerpath += "/";
       compilerpath += compilername;
+    } else {
+      if (!realPath(compilername.c_str(), compilerpath, ignoreCCACHE)) {
+        compilerpath = execpath;
+        compilerpath += PATHDIV;
+        compilerpath += compilername;
+      }
+      compilerexecname += compilername;
     }
-    compilerexecname += compilername;
   }
 }
 
@@ -431,6 +436,10 @@ do {                                                                           \
 
   // for fpcupdeluxe
   TRYDIR(execpath, "/include/clang");
+  
+  if (!intrinsicpath.empty()) {
+    TRYDIR2(intrinsicpath);
+  }
 
   return false;
 #undef TRYDIR
