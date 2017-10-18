@@ -1,7 +1,7 @@
---- ld64/src/ld/Options.cpp	Sat Jun 25 11:44:09 2016
-+++ ld64/src/ld/Options.cpp	Tue Nov 22 08:25:46 2016
-@@ -867,9 +867,20 @@
- 	return false;
+--- ld64/src/ld/Options.cpp	Sun Feb 05 10:08:25 2017
++++ ld64/src/ld/Options.cpp	Wed Oct 18 09:10:19 2017
+@@ -864,9 +864,20 @@
+ 		return path.substr(0, lastSlashPos+1);
  }
  
 +static std::string get_extension(const std::string &path)
@@ -14,18 +14,17 @@
 +	return result;
 +}
 +
- Options::FileInfo Options::findFile(const std::string &path) const
+ Options::FileInfo Options::findFile(const std::string &path, const ld::dylib::File* fromDylib) const
  {
  	FileInfo result;
 +	bool found;
  
  	// if absolute path and not a .o file, then use SDK prefix
  	if ( (path[0] == '/') && (strcmp(&path[path.size()-2], ".o") != 0) ) {
-@@ -895,6 +906,23 @@
- 
- 		if ( findFile(newPath, {".tbd"}, result) )
- 			return result;
-+	}
+@@ -916,6 +927,23 @@
+ 	// try raw path
+ 	if ( findFile(path, {".tbd"}, result) )
+ 		return result;
 +
 +	// get file extension
 +	auto Extension = get_extension(path);
@@ -42,6 +41,7 @@
 +	found = findFile(path, {Extension}, result);
 +	if ( found ) {
 +		return result;
- 	}
++ 	}		
  
  	// not found
+ 	throwf("file not found: %s", path.c_str());
