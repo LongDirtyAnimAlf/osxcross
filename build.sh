@@ -157,6 +157,7 @@ popd &>/dev/null
 patch -p0 < $PATCH_DIR/cctools-ld64-1.patch
 patch -p0 < $PATCH_DIR/cctools-ld64-2.patch
 patch -p0 < $PATCH_DIR/cctools-ld64-3.patch
+patch -p0 < $PATCH_DIR/dlfcn.h.patch
 echo ""
 CONFFLAGS="--prefix=$TARGET_DIR --target=x86_64-apple-$TARGET "
 [ -z "$USE_CLANG_AS" ] && CONFFLAGS+="--disable-clang-as "

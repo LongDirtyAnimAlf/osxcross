@@ -835,6 +835,7 @@ bool Target::setup() {
       if (wliblto == -1)
         fargs.push_back("-Wno-liblto");
     }
+    fargs.push_back("-Wno-unused-command-line-argument");
   } else if (isGCC()) {
     if (args.empty() || (args.size() == 1 && args[0] == "-v")) {
       //

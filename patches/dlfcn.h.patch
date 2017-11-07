@@ -1,0 +1,11 @@
+--- include/foreign/dlfcn.h	Sat Apr 01 11:42:34 2017
++++ include/foreign/dlfcn.h	Sun Aug 20 09:01:20 2017
+@@ -2,7 +2,7 @@
+ #define __CCTOOLS_PORT_DLFCN_H__
+ #include_next <dlfcn.h>
+ #include <stdio.h> /* stderr */
+-#ifdef __CYGWIN__
++#ifdef __CYGWINNN__
+ typedef struct dl_info {
+     const char  *dli_fname;
+     void        *dli_fbase;
