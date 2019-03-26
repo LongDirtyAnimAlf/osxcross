@@ -302,7 +302,7 @@ const std::string &Target::getDefaultTriple(std::string &triple) const {
 void Target::setCompilerPath() {
   if (isGCC()) {
     compilerpath = execpath;
-    compilerpath += "/";
+    compilerpath += PATHDIV;
     compilerpath += getTriple();
     compilerpath += "-";
     compilerpath += "base-";
@@ -313,13 +313,16 @@ void Target::setCompilerPath() {
     compilerexecname += compilername;
   } else {
     if (!compilerpath.empty()) {
-      compilerpath += "/";
+      compilerpath += PATHDIV;
       compilerpath += compilername;
     } else {
-      if (!realPath(compilername.c_str(), compilerpath, ignoreCCACHE)) {
         compilerpath = execpath;
         compilerpath += PATHDIV;
         compilerpath += compilername;
+      if (!fileExists(compilerpath.c_str())) {
+        compilerpath.clear();
+        if (!realPath(compilername.c_str(), compilerpath, ignoreCCACHE))
+          compilerpath = compilername;        
       }
       compilerexecname += compilername;
     }
